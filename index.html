@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bisma Maulana Azhar - Frontend Developer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js Library for 3D Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-body: #060709;
+            --bg-card: rgba(13, 16, 22, 0.75);
+            --bg-card-hover: rgba(22, 27, 38, 0.85);
+            --border-color: rgba(212, 175, 55, 0.18);
+            --border-glow: rgba(212, 175, 55, 0.5);
+            --accent-gold: #D4AF37;
+            --accent-gold-light: #F7E7CE;
+            --accent-bronze: #AA7C11;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #canvas-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 900px;
+            background: rgba(10, 12, 16, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span { color: var(--accent-gold); }
+
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: 0.3s ease;
+        }
+
+        .nav-links a:hover { color: var(--accent-gold); }
+
+        header {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 110px;
+            padding-bottom: 70px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid var(--border-color);
+            padding: 7px 18px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            color: var(--accent-gold-light);
+            margin-bottom: 22px;
+        }
+
+        .badge-pulse {
+            width: 7px;
+            height: 7px;
+            background: #10B981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10B981;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 4.5vw, 3.4rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, #FFFFFF 20%, var(--accent-gold) 70%, var(--accent-bronze) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            max-width: 650px;
+            margin: 0 auto 35px;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 35px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-bronze));
+            color: #000;
+            border: none;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        section {
+            padding: 90px 0;
+            perspective: 1000px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--text-main);
+        }
+
+        .section-title p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-top: 6px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+        }
+
+        .card-3d {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .card-3d:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15), 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        .project-tag {
+            font-size: 0.72rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .card-3d h3 {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            margin-bottom: 10px;
+        }
+
+        .card-3d p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .tech-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .tech-item {
+            background: rgba(212, 175, 55, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            color: var(--accent-gold-light);
+            font-weight: 500;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .project-btn {
+            font-size: 0.88rem;
+            color: var(--text-main);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .project-btn:hover { color: var(--accent-gold); }
+
+        .company-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-gold);
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .bullet-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .bullet-list li::before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+        }
+
+        .skill-group-title {
+            font-size: 1.05rem;
+            color: var(--accent-gold);
+            margin-bottom: 14px;
+            font-family: var(--font-heading);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .timeline-item:last-child { margin-bottom: 0; }
+
+        .timeline-dot {
+            position: absolute;
+            left: -37px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        .timeline-date {
+            font-size: 0.82rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 4, 6, 0.92);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 1000px;
+            height: 82vh;
+            background: var(--bg-body);
+            border: 1px solid var(--border-glow);
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 15px 22px;
+            background: rgba(13, 16, 22, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close-modal:hover { color: var(--accent-gold); }
+
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            text-align: center;
+            color: #64748B;
+            font-size: 0.88rem;
+            background: rgba(6, 8, 12, 0.8);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-bronze));
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 3000;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-title { font-size: 2.2rem; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-3d"></canvas>
+
+    <nav>
+        <a href="#" class="logo">BISMA<span>.DEV</span></a>
+        <ul class="nav-links">
+            <li><a href="#pengalaman">Pengalaman</a></li>
+            <li><a href="#proyek">Proyek</a></li>
+            <li><a href="#keahlian">Keahlian</a></li>
+            <li><a href="#pendidikan">Pendidikan</a></li>
+            <li><a href="#kontak">Kontak</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <div class="container">
+            <div class="hero-badge">
+                <span class="badge-pulse"></span> Mahasiswa S1 Teknik Informatika - UNPAM[cite: 3]
+            </div>
+            <h1 class="hero-title">Bisma Maulana Azhar<br><span class="gold-gradient">Frontend Web Developer</span></h1>
+            <p class="hero-description">
+                Memiliki latar belakang industri manufaktur dan dedikasi penuh pada pengembangan antarmuka web modern yang cepat, bersih, serta responsif.
+            </p>
+            <div class="cta-group">
+                <a href="mailto:bismaamaulanaa@gmail.com" class="btn btn-primary">
+                    <i class="fa-solid fa-paper-plane"></i> Hubungi Saya
+                </a>
+                <button onclick="downloadCV()" class="btn btn-secondary">
+                    <i class="fa-solid fa-file-pdf"></i> Unduh CV (PDF)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section id="pengalaman">
+        <div class="container">
+            <div class="section-title">
+                <h2>Pengalaman Kerja</h2>
+                <p>Rekam jejak profesional di bidang logistik dan manajemen data</p>
+            </div>
+            <div class="card-3d">
+                <div class="company-badge">
+                    <i class="fa-solid fa-building-flag"></i> PT Mayora Indah Tbk[cite: 3]
+                </div>
+                <h3>Admin Central Warehouse</h3>
+                <p style="color: var(--accent-gold-light); font-size: 0.88rem; margin-bottom: 15px;">Divisi Logistik dan Manajemen Stok (April 2025 - September 2025)[cite: 3]</p>
+                <ul class="bullet-list">
+                    <li>Mengelola dan mencatat data transaksi barang masuk dan keluar untuk mendukung akurasi pencatatan inventaris gudang[cite: 3].</li>
+                    <li>Menyusun laporan inventaris harian dan bulanan menggunakan Microsoft Excel secara terstruktur[cite: 3].</li>
+                    <li>Memeriksa kelengkapan dan kesesuaian data stok untuk membantu meminimalkan kesalahan pencatatan[cite: 3].</li>
+                    <li>Berkoordinasi dengan tim operasional dan logistik untuk mendukung kelancaran penyimpanan serta distribusi barang[cite: 3].</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="proyek">
+        <div class="container">
+            <div class="section-title">
+                <h2>Proyek Unggulan</h2>
+                <p>Aplikasi web interaktif mandiri yang dapat diuji coba secara langsung</p>
+            </div>
+            <div class="grid-2">
+                
+                <div class="card-3d">
+                    <div class="project-tag">E-Commerce Brand Showcase</div>
+                    <h3>NOVRA – Brand Website[cite: 3]</h3>
+                    <p>Antarmuka web komersial dengan tata letak visual bersih, palet warna elegan, dan pengalaman navigasi yang mulus.</p>
+                    <div class="tech-list">
+                        <span class="tech-item">HTML5</span>
+                        <span class="tech-item">CSS3</span>
+                        <span class="tech-item">JavaScript</span>
+                        <span class="tech-item">Responsive UI</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://azharz845.github.io/novra/" target="_blank" class="project-btn">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Website
+                        </a>
+                        <button onclick="openPreview('https://azharz845.github.io/novra/', 'NOVRA Brand Showcase')" class="project-btn" style="background:none; border:none; cursor:pointer;">
+                            <i class="fa-solid fa-expand"></i> Preview Modal
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-3d">
+                    <div class="project-tag">Browser Mini-Game Engine</div>
+                    <h3>ZAR GAME – Mini-Game[cite: 3]</h3>
+                    <p>Aplikasi mini-game interaktif berbasis browser yang menguji logika manipulasi DOM real-time serta sistem skor dinamis[cite: 3].</p>
+                    <div class="tech-list">
+                        <span class="tech-item">HTML5</span>
+                        <span class="tech-item">CSS Grid</span>
+                        <span class="tech-item">JS DOM Engine</span>
+                        <span class="tech-item">Game Logic</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://azharz845.github.io/zar-gamee/" target="_blank" class="project-btn">
+                            <i class="fa-solid fa-gamepad"></i> Mainkan Game
+                        </a>
+                        <button onclick="openPreview('https://azharz845.github.io/zar-gamee/', 'ZAR Mini Game')" class="project-btn" style="background:none; border:none; cursor:pointer;">
+                            <i class="fa-solid fa-expand"></i> Preview Modal
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="keahlian">
+        <div class="container">
+            <div class="section-title">
+                <h2>Keahlian & Kompetensi</h2>
+                <p>Kombinasi kemampuan teknis web development, aplikasi kantor, dan soft skills</p>
+            </div>
+            <div class="grid-3">
+                
+                <div class="card-3d">
+                    <div class="skill-group-title"><i class="fa-solid fa-code"></i> Frontend Web</div>
+                    <div class="tech-list">
+                        <span class="tech-item">HTML5</span>
+                        <span class="tech-item">CSS3</span>
+                        <span class="tech-item">JavaScript (ES6+)</span>
+                        <span class="tech-item">DOM Manipulation</span>
+                        <span class="tech-item">Responsive Design</span>
+                    </div>
+                </div>
+
+                <div class="card-3d">
+                    <div class="skill-group-title"><i class="fa-solid fa-file-excel"></i> Office & Tools</div>
+                    <div class="tech-list">
+                        <span class="tech-item">Microsoft Excel</span>
+                        <span class="tech-item">Microsoft Word</span>
+                        <span class="tech-item">Git & GitHub</span>
+                        <span class="tech-item">VS Code</span>
+                        <span class="tech-item">GitHub Pages</span>
+                    </div>
+                </div>
+
+                <div class="card-3d">
+                    <div class="skill-group-title"><i class="fa-solid fa-users-gear"></i> Soft Skills</div>
+                    <div class="tech-list">
+                        <span class="tech-item">Problem Solving</span>
+                        <span class="tech-item">Ketelitian</span>
+                        <span class="tech-item">Manajemen Waktu</span>
+                        <span class="tech-item">Kerja Sama Tim</span>
+                        <span class="tech-item">Disiplin</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="pendidikan">
+        <div class="container">
+            <div class="section-title">
+                <h2>Riwayat Pendidikan</h2>
+                <p>Landasan akademis formal di bidang teknik dan teknologi informasi</p>
+            </div>
+            <div class="timeline">
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">September 2025 - Sekarang (Semester 3)[cite: 3]</div>
+                    <h3>Universitas Pamulang (UNPAM)[cite: 3]</h3>
+                    <p style="color: var(--accent-gold); font-size: 0.88rem;">S1 - Teknik Informatika[cite: 3]</p>
+                    <p>Mempelajari dasar-dasar algoritma pemrograman, logika komputasi, dan pengembangan perangkat lunak[cite: 3].</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Lulus (Nilai Rata-Rata Ijazah: 82.75)[cite: 3]</div>
+                    <h3>SMKN 2 Kabupaten Tangerang[cite: 3]</h3>
+                    <p style="color: var(--accent-gold); font-size: 0.88rem;">Teknik Instalasi Tenaga Listrik[cite: 3]</p>
+                    <p>Memperoleh dasar pengetahuan teknis, troubleshooting, pemecahan masalah, dan penerapan prosedur kerja secara sistematis[cite: 3].</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="kontak">
+        <div class="container">
+            <div class="section-title">
+                <h2>Mari Berkolaborasi</h2>
+                <p>Terbuka untuk peluang karier frontend developer maupun proyek web baru</p>
+            </div>
+            <div class="cta-group">
+                <a href="mailto:bismaamaulanaa@gmail.com" class="btn btn-primary">
+                    <i class="fa-solid fa-envelope"></i> bismaamaulanaa@gmail.com
+                </a>
+                <a href="https://wa.me/6285810127651" target="_blank" class="btn btn-secondary">
+                    <i class="fa-brands fa-whatsapp"></i> 085810127651
+                </a>
+                <a href="https://github.com/azharz845" target="_blank" class="btn btn-secondary">
+                    <i class="fa-brands fa-github"></i> GitHub Profile
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Bisma Maulana Azhar. Designed with Precision & Professional Standards.</p>
+        </div>
+    </footer>
+
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modal-title" style="font-weight: 700; font-family: var(--font-heading); color: var(--accent-gold);">Preview Proyek</span>
+                <button class="close-modal" onclick="closePreview()">&times;</button>
+            </div>
+            <div class="modal-body" style="height: 100%;">
+                <iframe id="modal-iframe" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Status Pesan</div>
+
+    <script>
+        const canvas3D = document.getElementById('canvas-3d');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas3D, alpha: true, antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const geometry = new THREE.IcosahedronGeometry(3.5, 1);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xD4AF37,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const mesh3D = new THREE.Mesh(geometry, material);
+        scene.add(mesh3D);
+
+        camera.position.z = 7;
+
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 0.5;
+        });
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            mesh3D.rotation.x += 0.002;
+            mesh3D.rotation.y += 0.003;
+
+            mesh3D.rotation.x += (mouseY - mesh3D.rotation.x) * 0.02;
+            mesh3D.rotation.y += (mouseX - mesh3D.rotation.y) * 0.02;
+
+            renderer.render(scene, camera);
+        }
+        animate3D();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        const cards = document.querySelectorAll('.card-3d');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(8px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+            });
+        });
+
+        function openPreview(url, title) {
+            document.getElementById('modal-iframe').src = url;
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('preview-modal').style.display = 'flex';
+        }
+
+        function closePreview() {
+            document.getElementById('preview-modal').style.display = 'none';
+            document.getElementById('modal-iframe').src = '';
+        }
+
+        function downloadCV() {
+            showToast("Mengunduh CV Bisma Maulana Azhar...");
+            const link = document.createElement('a');
+            link.href = 'cv-azhar.pdf'; // Mengarah ke file PDF CV kamu
+            link.download = 'CV_Bisma_Maulana_Azhar.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+    </script>
+</body>
+</html>
